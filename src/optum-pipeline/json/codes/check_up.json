@@ -1,0 +1,81 @@
+{
+    "diag": {
+        "visit": {
+            "icd": [
+                "^V700.*",
+
+                "^Z00.*"
+            ],
+
+            "cpt": [
+                "^9920[2-5]$",
+                "^9921[1-5]$",
+                "^9938[1-7]$",
+                "^9939[1-7]$"
+            ],
+
+            "hcpcs": [
+                "G0438",
+                "G0439"
+            ],
+
+            "codes": [
+                "icd",
+                "cpt",
+                "hcpcs"
+            ],
+
+            "sources": [
+                "https://www.aafp.org/fpm/2014/0700/oa1.html",
+                "http://www.icd9data.com/2015/Volume1/V01-V91/V70-V82/V70/V70.0.htm",
+                "https://www.icd10data.com/ICD10CM/Codes/Z00-Z99/Z00-Z13/Z00-",
+                "https://www.healthcarepartnersny.com/wp-content/uploads/2020/09/109-0070_HCP_HCC-AWV_Coding-Tips.pdf",
+                "https://www.acponline.org/practice-resources/business-resources/payment/medicare-payment-and-regulations-resources/how-to-bill-medicares-annual-wellness-visit-awv",
+                "https://www.aapc.com/codes/cpt-codes-range/99202-99215/",
+                "https://www.aapc.com/codes/cpt-codes-range/99381-99429/"
+            ]
+        }
+    },
+
+    "proc": {
+        "visit": {
+            "icd": [
+                "^V700.*",
+
+                "^Z00.*"
+            ],
+
+            "cpt": [
+                "^9920[2-5]$",
+                "^9921[1-5]$",
+                "^9938[1-7]$",
+                "^9939[1-7]$"
+            ],
+
+            "hcpcs": [
+                "G0438",
+                "G0439"
+            ],
+
+            "codes": [
+                "icd",
+                "cpt",
+                "hcpcs"
+            ],
+
+            "sources": [
+                "https://www.aafp.org/fpm/2014/0700/oa1.html",
+                "http://www.icd9data.com/2015/Volume1/V01-V91/V70-V82/V70/V70.0.htm",
+                "https://www.icd10data.com/ICD10CM/Codes/Z00-Z99/Z00-Z13/Z00-",
+                "https://www.healthcarepartnersny.com/wp-content/uploads/2020/09/109-0070_HCP_HCC-AWV_Coding-Tips.pdf",
+                "https://www.acponline.org/practice-resources/business-resources/payment/medicare-payment-and-regulations-resources/how-to-bill-medicares-annual-wellness-visit-awv",
+                "https://www.aapc.com/codes/cpt-codes-range/99202-99215/",
+                "https://www.aapc.com/codes/cpt-codes-range/99381-99429/"
+            ]
+        }
+    }
+
+    
+
+
+}

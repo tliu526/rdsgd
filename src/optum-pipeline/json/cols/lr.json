@@ -1,0 +1,24 @@
+{
+    "idx": [
+        "patid", 
+        "pat_planid", 
+        "fst_dt"
+    ],
+
+    "lr": [
+        "loinc_cd", 
+        "rslt_nbr", 
+        "rslt_txt", 
+        "rslt_unit_nm", 
+        "proc_cd", 
+        "labclmid",
+        "abnl_cd",
+        "hi_nrml",
+        "low_nrml"
+    ],
+
+    "sources": [
+        "CDM_Data_Dictionary_V8.1_SES.xls",
+        "DCMUserManual_81.docx"
+    ]
+}

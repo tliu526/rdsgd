@@ -1,0 +1,129 @@
+{
+    "diag": {
+        "screen": {
+            "cpt": [
+                "^7608[2-6]$",
+                "^76088$",
+                "^7609[0-2]$",
+                "^7705[2-7]$",
+                "^7706[1-3]$",
+                "^77067$"
+            ],
+
+            "icd": [
+                "^Z1231$",
+                "^Z1239$",
+
+                "^V7610$",
+                "^V7611$",
+                "^V7612$",
+                "^V7619$",
+
+                "^BH0[0-6].*"
+            ],
+
+            "hcpcs": [
+                "G0202",
+                "G0203"
+            ],
+
+            "codes": [
+                "icd",
+                "cpt",
+                "hcpcs"
+            ],
+
+            "sources": [
+                "notebooks/breast_cancer_codes.ipynb",
+                "https://www.icd10data.com/ICD10PCS/Codes/B/H/0",
+                "https://www.womenspreventivehealth.org/wp-content/uploads/FINAL_WPSI_CodingGuide_2021_BreastCancerScreeningAverageRiskWomen.pdf",
+                "https://www.icd10data.com/ICD10CM/Codes/Z00-Z99/Z00-Z13/Z12-/Z12.31",
+                "http://www.icd9data.com/2015/Volume1/V01-V91/V70-V82/V76/V76.10.htm",
+                "https://www.cms.gov/Medicare/Medicare-Fee-for-Service-Payment/PhysicianFeeSched/Downloads/FAQ-Mammography-Services-Coding-Direct-Digital-Imaging.pdf"
+            ]
+        },
+
+        "diagnosis": {
+            "icd": [
+                "^C50.*",
+                "^174.*"
+            ],
+    
+            "codes": [
+                "icd"
+            ],
+    
+            "sources": [
+                "https://www.icd10data.com/ICD10CM/Codes/C00-D49/C50-C50/C50-",
+                "http://www.icd9data.com/2013/Volume1/140-239/170-176/174/default.htm"
+            ]
+        }
+    },
+
+    "proc": {
+        "screen": {
+            "cpt": [
+                "^7608[2-6]$",
+                "^76088$",
+                "^7609[0-2]$",
+                "^7705[2-7]$",
+                "^7706[1-3]$",
+                "^77067$"
+            ],
+
+            "icd": [
+                "^Z1231$",
+                "^Z1239$",
+
+                "^V7610$",
+                "^V7611$",
+                "^V7612$",
+                "^V7619$",
+
+                "^BH0[0-6].*"
+            ],
+
+            "hcpcs": [
+                "G0202",
+                "G0203"
+            ],
+
+            "codes": [
+                "icd",
+                "cpt",
+                "hcpcs"
+            ],
+
+            "sources": [
+                "notebooks/sandbox_breast_cancer_codes.ipynb",
+                "https://www.icd10data.com/ICD10PCS/Codes/B/H/0",
+                "https://www.womenspreventivehealth.org/wp-content/uploads/FINAL_WPSI_CodingGuide_2021_BreastCancerScreeningAverageRiskWomen.pdf",
+                "https://www.icd10data.com/ICD10CM/Codes/Z00-Z99/Z00-Z13/Z12-/Z12.31",
+                "http://www.icd9data.com/2015/Volume1/V01-V91/V70-V82/V76/V76.10.htm",
+                "https://www.cms.gov/Medicare/Medicare-Fee-for-Service-Payment/PhysicianFeeSched/Downloads/FAQ-Mammography-Services-Coding-Direct-Digital-Imaging.pdf"
+            ]
+        }
+    },
+
+    "merge": {
+        "window": 7,
+        
+        "pre": {
+            "table": "diag",
+            "task": "visit"
+        },
+        
+        "post": {
+            "table": "diag",
+            "task": "screen"
+        },
+
+        "pre_cols": [
+            "diag"
+        ],
+
+        "post_cols": [
+            "diag"
+        ]
+    }
+}

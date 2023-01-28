@@ -1,0 +1,18 @@
+{
+    "idx":[
+        "patid",
+        "pat_planid", 
+        "fill_dt"
+    ],
+
+    "r": [
+        "fst_fill",
+        "ndc",
+        "ahfsclss"
+    ],
+
+    "sources": [
+        "CDM_Data_Dictionary_V8.1_SES.xls",
+        "DCMUserManual_81.docx"
+    ]
+}

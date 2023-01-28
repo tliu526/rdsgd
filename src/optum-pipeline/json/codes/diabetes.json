@@ -1,0 +1,83 @@
+{
+    "lr": {
+        "a1c": {
+            "loinc": [
+                "^4548-4$", 
+                "^4549-2$", 
+                "^17856-6$", 
+                "^59261-8$", 
+                "^62388-4$", 
+                "^41995-2$"
+            ],
+
+            "codes": [
+                "loinc"
+            ],
+
+            "sources": [
+                "archive/med_extract.py"
+            ]       
+        },
+        "glucose": {
+            "loinc": [
+                "^2345-7$",
+                "^2339-0$",
+                "^27353-2$",
+                "^1558-6$"
+            ],
+
+            "codes": [
+                "loinc"
+            ],
+
+            "sources": [
+                "archive/med_extract.py"
+            ]       
+        }
+    },
+
+    "diag": {
+        "diagnosis": {
+            "icd": [
+                "^250[0-9](?:0|2)$",
+                
+                "^E11.*"
+            ],
+
+            "codes":[
+                "icd"
+            ],
+
+            "sources": [
+                "http://www.icd9data.com/2014/Volume1/240-279/249-259/250/default.htm"
+            ]
+        }
+    },
+
+    "merge": {
+        "window": 7,
+        
+        "pre": {
+            "table": "lr",
+            "task": "a1c"
+        },
+        
+        "post": {
+            "table": "diag",
+            "task": "diagnosis"
+        },
+
+        "pre_cols": [
+            "loinc_cd",
+            "proc_cd",
+            "abnl_cd",
+            "rslt_txt",
+            "rslt_nbr",
+            "rslt_unit_nm"
+        ],
+
+        "post_cols": [
+            "diag"
+        ]
+    }
+}

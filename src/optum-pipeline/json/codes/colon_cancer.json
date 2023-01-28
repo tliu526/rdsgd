@@ -1,0 +1,85 @@
+{
+    "diag": {
+        "screen": {
+            "cpt": [
+                "45378"
+            ],
+            
+            "icd": [
+                "V7651",
+
+                "Z1211"
+            ],
+            
+            "hcpcs": [
+                "G0105",
+                "G0121"
+            ],
+            
+            "codes": [
+                "cpt",
+                "icd",
+                "hcpcs"
+            ],
+
+            "sources": [
+                "https://www.asge.org/docs/default-source/coding/colonoscopy_2018-coding-sheet.pdf?sfvrsn=3a2ca050_4",
+                "http://www.icd9data.com/2012/Volume1/V01-V91/V70-V82/V76/V76.51.htm",
+                "https://www.icd10data.com/ICD10CM/Codes/Z00-Z99/Z00-Z13/Z12-/Z12.11"
+            ]
+        }
+    },
+
+    "proc": {
+        "screen": {
+            "cpt": [
+                "45378"
+            ],
+            
+            "icd": [
+                "V7651",
+
+                "Z1211"
+            ],
+            
+            "hcpcs": [
+                "G0121"
+            ],
+            
+            "codes": [
+                "cpt",
+                "icd",
+                "hcpcs"
+            ],
+
+            "sources": [
+                "https://www.asge.org/docs/default-source/coding/colonoscopy_2018-coding-sheet.pdf?sfvrsn=3a2ca050_4",
+                "http://www.icd9data.com/2012/Volume1/V01-V91/V70-V82/V76/V76.51.htm",
+                "https://www.icd10data.com/ICD10CM/Codes/Z00-Z99/Z00-Z13/Z12-/Z12.11"
+            ]
+        }
+    },
+
+    "merge": {
+        "window": 7,
+        
+        "pre": {
+            "table": "diag",
+            "task": "visit"
+        },
+        
+        "post": {
+            "table": "diag",
+            "task": "screen"
+        },
+
+        "pre_cols": [
+            "diag"
+        ],
+
+        "post_cols": [
+            "diag"
+        ]
+    }
+}
+

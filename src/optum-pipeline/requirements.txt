@@ -1,0 +1,13 @@
+# data processing
+dask
+pandas
+
+# analysis
+statsmodels
+numpy
+sklearn
+scipy
+jupyter
+matplotlib
+seaborn
+plotly

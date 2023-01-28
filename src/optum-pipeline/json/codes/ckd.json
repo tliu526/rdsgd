@@ -1,0 +1,140 @@
+{
+    "lr": {
+        "egfr": {
+            "loinc": [
+                "^33914-3$",
+                "^55044-7$",
+                "^48642-3$",
+                "^48643-1$",
+                "^62238-1$",
+		        "^69405-9$",
+                "^88293-6$",		
+                "^88294-4$",
+
+                "^50044-7$",
+                "^77147-7$",
+                "^70969-1$"
+            ],
+
+            "codes": [
+                "loinc"
+            ],
+
+            "sources": [
+                "https://www.kidney.org/ckdchangepackage/docs/ckdintercept-practice-assessment",
+                "https://testcatalog.org/show/CRTS1",
+                "https://loinc.org/45066-8/",
+                "https://loinc.org/24321-2/"
+            ]
+        }
+    },
+
+    "diag": {
+        "ckd": {
+            "icd": [
+                "^585[1-5]$",
+		        "^5859$",
+
+                "^N18[1-5]$",
+                "^N189$"
+            ],
+
+            "codes": [
+                "icd"
+            ],
+
+            "sources": [
+                "https://www.kidney.org/ckdchangepackage/docs/ckdintercept-practice-assessment"
+            ]
+        },
+
+        "dialysis": {
+            "icd": [
+                "^V4511$",
+                "^Z992$",
+                "^V56.*",
+                "^Z49.*"
+            ],
+
+            "hcpcs": [
+
+            ],
+
+            "cpt": [
+                "^90935$",
+                "^90937$",
+                "^90940$"
+            ],
+
+            "codes": [
+                "icd",
+                "cpt"
+            ],
+
+            "sources": [
+                "https://www.aapc.com/codes/cpt-codes-range/90935-90940/",
+                "http://www.icd9data.com/2012/Volume1/V01-V91/V40-V49/V45/V45.11.htm",
+                "https://www.icd10data.com/ICD10CM/Codes/Z00-Z99/Z77-Z99/Z99-/Z99.2",
+                "http://www.icd9data.com/2015/Volume1/V01-V91/V50-V59/V56/default.htm",
+                "https://www.icd10data.com/ICD10CM/Codes/Z00-Z99/Z40-Z53/Z49-"
+            ]
+        }
+    },
+
+    "proc": {
+        "dialysis": {
+            "icd": [
+                "^V4511$",
+                "^Z992$"
+            ],
+
+            "hcpcs": [
+
+            ],
+
+            "cpt": [
+                "^90935$",
+                "^90937$",
+                "^90940$"
+            ],
+
+            "codes": [
+                "icd",
+                "cpt"
+            ],
+
+            "sources": [
+                "https://www.aapc.com/codes/cpt-codes-range/90935-90940/",
+                "http://www.icd9data.com/2012/Volume1/V01-V91/V40-V49/V45/V45.11.htm",
+                "https://www.icd10data.com/ICD10CM/Codes/Z00-Z99/Z77-Z99/Z99-/Z99.2"
+            ]
+        }
+    },
+
+    "merge": {
+        "window": 30,
+        
+        "pre": {
+            "table": "lr",
+            "task": "egfr"
+        },
+        
+        "post": {
+            "table": "diag",
+            "task": "ckd"
+        },
+
+        "pre_cols": [
+            "loinc_cd",
+            "proc_cd",
+            "abnl_cd",
+            "rslt_txt",
+            "rslt_nbr",
+            "rslt_unit_nm"
+        ],
+
+        "post_cols": [
+            "diag"
+        ]
+    }
+}

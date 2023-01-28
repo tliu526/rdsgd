@@ -1,0 +1,22 @@
+*.m~
+*.csv
+*.xls
+*.zip
+*.png
+*.mat
+*.txt
+*.pyc
+*.json
+*.pdf
+.ipynb_checkpoints
+.DS_STORE
+
+
+# latex
+*.aux
+*.dvi
+*.bbl
+*.blg
+*.log
+*.out
+*.gz
