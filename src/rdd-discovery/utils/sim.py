@@ -4,8 +4,8 @@ Utility functions for simulated data.
 import numpy as np
 import pandas as pd
 import seaborn as sns
-import matplotlib.pyplot as plt
 
+from scipy.stats import norm
 from sklearn.datasets import make_regression
 
 __all__ = [
@@ -166,6 +166,8 @@ def generate_blended_rdd_with_covars(seed, n_samples, fuzzy_gap, take, reg_dict,
     # running variable
     x = np.random.uniform(0, 1, n_samples)
     
+    # cutoff indicator
+    #cutoff_choice = np.random.binomial(1, feat_df['comply_coeff'], n_samples)
     
     cutoffs = np.where(feat_df['comply_coeff'] > 0.5, 0.25, 0.75)
     
@@ -189,3 +191,55 @@ def generate_blended_rdd_with_covars(seed, n_samples, fuzzy_gap, take, reg_dict,
     feat_df['cutoff'] = cutoffs
     
     return feat_df
+
+# def sigmoid(x, location=0, scale=15):
+#     return 1 / (1 + np.exp(scale*(-x + location)))
+
+
+# def gen_sigmoid_data(n_samples, boundary=0.5, seed=0):
+#     np.random.seed(seed)
+
+#     # observed running variable
+#     x = np.random.uniform(0, 1, n_samples)
+
+#     # unobserved confounder
+#     u = np.random.normal(0, 0.1, n_samples)
+
+#     p_adj = sigmoid(x, boundary) + u
+#     p_adj = np.clip(p_adj, 0,1)
+
+#     # treatment indicator
+#     t = np.random.binomial(1, p_adj, n_samples)
+
+#     df = pd.DataFrame()
+#     df['x'] = x # running variable
+#     df['t'] = t # indicator for actual treatment assignment
+#     df['p'] = p_adj # true probability of treatment
+
+#     return df
+
+
+# def generate_cat_blended_sigmoid(seed, n):
+#     df1 = gen_sigmoid_data(n, seed=seed, boundary=BOUNDARY1)
+#     df2 = gen_sigmoid_data(n, seed=seed+1, boundary=BOUNDARY2)
+
+#     df1['covar'] = True
+#     df2['covar'] = False
+
+#     neg_df = df1.append(df2)
+#     neg_df = neg_df.sample(frac=1).reset_index(drop=True)
+
+#     return neg_df
+
+
+# def generate_cont_blended_sigmoid(seed, n):
+#     df1 = gen_sigmoid_data(n, seed=seed, boundary=BOUNDARY1)
+#     df2 = gen_sigmoid_data(n, seed=seed+1, boundary=BOUNDARY2)
+
+#     df1['covar'] = np.random.uniform(50, 64.99, size=n)
+#     df2['covar'] = np.random.uniform(65, 80, size=n)
+
+#     neg_df = df1.append(df2)
+#     neg_df = neg_df.sample(frac=1).reset_index(drop=True)
+
+#     return neg_df

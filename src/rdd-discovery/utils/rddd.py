@@ -1,5 +1,5 @@
 """
-Implements subgroup RDD discovery procedure.
+Implements RD subgroup discovery procedure.
 """
 from contextlib import redirect_stderr
 from econml.dml import CausalForestDML
@@ -13,13 +13,27 @@ import statsmodels.formula.api as smf
 # user imports
 import sys
 sys.path.append("../")
+from utils.pwr import rdd_power
+from utils.neff import neff_test, neff
+
+# separate out rpy2 imports, commented out for performance reasons
+"""
+import rpy2
+from rpy2.robjects.packages import importr
+from rpy2.robjects import pandas2ri
+
+r_rdd = importr("rdd")
+
+# activate automatic pandas to R for this session
+pandas2ri.activate()
+"""
 
 def test_discontinuity(df, cutoff, running='x', treat='t', bw=None, kernel="triangular"):
     """
     Tests whether there is a discontinuity present at the cutoff via first stage
     regression.
     
-    Assumes a uniform kernel.
+    By default, uses a triangular kernel.
     
     Args:
         df (pd.DataFrame): dataframe of candidate data
@@ -46,6 +60,7 @@ def test_discontinuity(df, cutoff, running='x', treat='t', bw=None, kernel="tria
     ols_formula = f"{treat} ~ 1 + x_lower + x_upper + z"
     try:
         ols_results = _OLS.from_formula(ols_formula, sel_df, weights=weights).fit(cov_type="robust")
+        #return ols_results.tstats['z'], ols_results.pvalues['z'], sel_df.shape[0]
         return ols_results, sel_df.shape[0], bw
     
     except Exception as e:
@@ -57,8 +72,6 @@ def first_stage_discovery(df, running_cols, grid_dict=None, treat='t', grid_size
     """
     Runs first stage threshold discovery.
     
-    Implements Algorithm A.1.
-
     Args:
         df (pd.DataFrame): input dataFrame
         running_cols (list): a list of the candidate running variable column names
@@ -80,9 +93,8 @@ def first_stage_discovery(df, running_cols, grid_dict=None, treat='t', grid_size
                                   df[running].max(),
                                   grid_size)
         results = []
-        # Step 1
+
         for cutoff in cutoffs:
-            # Steps 1a - 1c
             # (OLS_results, n_incl)
             result_tup = test_discontinuity(df, 
                                             cutoff=cutoff,
@@ -93,11 +105,9 @@ def first_stage_discovery(df, running_cols, grid_dict=None, treat='t', grid_size
 
             results.append(result_tup)
 
-        # Step 2
         pvals = [res[0].pvalues['z'] if res[0] is not None else np.nan for res in results]
         reject, _ = pg.multicomp(pvals, method="bonf", alpha=alpha)
 
-        # Step 3
         sel_results = {cutoff: results[i] for i, cutoff in enumerate(cutoffs) if reject[i]}
         
         running_dict[running] = sel_results
@@ -121,9 +131,11 @@ def gen_bandwidth(df, cutoff, running='x', treat='t', kernel="triangular"):
     """
     with redirect_stderr(None):
         try:
+            #bw = r_rdd.IKbandwidth(X=df[running], Y=df[treat], cutpoint=cutoff, kernel="triangular")[0]
             bw = optimal_bandwidth(X=df[running], Y=df[treat], cut=cutoff)
         
-        except Exception as r_err:
+        except rpy2.rinterface_lib.embedded.RRuntimeError as r_err:
+            #print(r_err)
             return None, None, None
     
     # exclude data
@@ -331,29 +343,29 @@ class Rule():
     def __repr__(self):
         return self.__str__()
 
-"""Policy tree functions"""
+"""RDSGD functions"""
 def compute_neff(df, treat='t', instrument='z'):
+    """Computes effective sample size based on subgroups (instead of treatment regression)"""
     comply_rate = df[(df[instrument] == 1)][treat].mean() - df[(df[instrument] == 0)][treat].mean()
     
     return df.shape[0] * (comply_rate)**2
 
 
-def _get_policy_tree(feat_df, covars, cost, treat="t", cutoff_indicator="z", 
+def _get_subgroup_tree(feat_df, covars, cost, treat="t", cutoff_indicator="z", 
                       max_depth=None, 
                       min_samples_leaf=100,
-                      alpha=0.05,
-                      random_state=None):
+                      min_impurity_decrease=0,
+                      alpha=0.05, 
+                      n_jobs=16):
     """
     Helper function for generating policy tree, allows for extraction of policy tree plot.
     """
-
-    #
-    cforest = CausalForestDML(
+    cforest = CausalForestDML(n_estimators=100, 
+                       subforest_size=4,
                        honest=True, 
                        inference=True,
                        discrete_treatment=True,
-                       n_jobs=16,
-                       random_state=random_state
+                       n_jobs=n_jobs
                       )
 
     cforest.fit(X=feat_df[covars], T=feat_df[cutoff_indicator], Y=feat_df[treat])
@@ -363,18 +375,20 @@ def _get_policy_tree(feat_df, covars, cost, treat="t", cutoff_indicator="z",
                                               uncertainty_only_on_leaves=False,
                                               max_depth=max_depth, 
                                               min_samples_leaf=min_samples_leaf,
-                                              uncertainty_level=alpha,
-                                              random_state=random_state
+                                              min_impurity_decrease=min_impurity_decrease,
+                                              uncertainty_level=alpha
                                              )
     interp_tree.interpret(cforest, feat_df[covars], sample_treatment_costs=cost)
 
     return interp_tree, cforest
 
-def get_policy_tree_subgroups(feat_df, covars, cost, treat="t", cutoff_indicator="z", 
+
+def get_tree_subgroups(feat_df, covars, cost, treat="t", cutoff_indicator="z", 
                       max_depth=None, 
                       min_samples_leaf=100,
-                      alpha=0.05,
-                      random_state=None):
+                      min_impurity_decrease=0,
+                      alpha=0.05, 
+                      n_jobs=16):
     """
     Fits a policy tree and returns candidate subgroups.
     
@@ -387,15 +401,15 @@ def get_policy_tree_subgroups(feat_df, covars, cost, treat="t", cutoff_indicator
         treat (str): treatment column (note that this will be the "outcome" of our causal estimator)
         cutoff_indicator (str): cutoff indicator, the "treatment" of our causal estimator
         alpha (float): nominal alpha level for testing
-        random_state (int): seed for reproducibility
     Returns
         node_dict, with subgroup definitions at each node
     """
-    interp_tree, cforest = _get_policy_tree(feat_df, covars, cost, treat, cutoff_indicator, 
+    interp_tree, cforest = _get_subgroup_tree(feat_df, covars, cost, treat, cutoff_indicator, 
                                             max_depth, 
                                             min_samples_leaf,
+                                            min_impurity_decrease,
                                             alpha,
-                                            random_state
+                                            n_jobs=n_jobs
                                             )
     
     X = feat_df[covars]
@@ -406,14 +420,14 @@ def get_policy_tree_subgroups(feat_df, covars, cost, treat="t", cutoff_indicator
         Xsub = X[mask]
         
         eff_est = cforest.const_marginal_ate_inference(Xsub)
+        neff_tstat, neff_pval = neff_test(feat_df, mask, treat=treat, instr=cutoff_indicator)
         node_dict[node_id] = {'mean': eff_est.mean_point.item(),
                               'net_benefit': (eff_est.mean_point - cost).item(),
                               'subgroup_mask': mask, #feat_df[mask],
-                              'std': (eff_est.std_point).item(),
-                              'ci': eff_est.conf_int_mean(alpha=alpha),
-                              'ci_len': np.abs(eff_est.conf_int_mean(alpha=alpha)[0].item() \
-                                               - eff_est.conf_int_mean(alpha=alpha)[1].item()),
-                              'neff': compute_neff(feat_df[mask], treat=treat)
+                              'grp_neff': neff(feat_df[mask], treat=treat, instr=cutoff_indicator),
+                              'neff_tstat': neff_tstat,
+                              'neff_pval': neff_pval,
+                              'reg_neff_baseline': cost**2 * feat_df.shape[0],
                              }
         
         
@@ -426,9 +440,11 @@ def get_policy_tree_subgroups(feat_df, covars, cost, treat="t", cutoff_indicator
         
     return node_dict
 
-def policy_tree_discovery(df, running_cols, grid_dict, treat='t', alpha=0.05, bw=None, rescale=False, omit_mask=False, random_state=None):
+def rd_subgroup_discovery(df, running_cols, grid_dict, treat='t', alpha=0.05, bw=None, rescale=False, omit_mask=False, kernel="triangular", n_jobs=16):
     """
-    Runs policy tree discovery across the given running columns.
+    Runs RDSGD across the given running columns. 
+    
+    Implements Algorithm 1 of KDD'23 submission.
     
     Args:
         df (pd.DataFrame): input dataFrame
@@ -437,10 +453,11 @@ def policy_tree_discovery(df, running_cols, grid_dict, treat='t', alpha=0.05, bw
         treat (str): the treatment variable column name
         alpha (float): the nominal FPR
         rescale (bool): whether to rescale the running variable to [0, 1], helps with large sample sizes and discrete grid 
-        omit_mask (bool): optionally omit the mask from results_dict   
-        random_state (int): seed for reproducibility
+        omit_mask (bool): optionally omit the mask from results_dict to save space
     Returns:
-        dict: running_var:sig_results k:v pairs, where sig_results is a dict of cutoff:subgroup_info
+        tup: (results, n_tests): 
+            results (dict): running_var:sig_results k:v pairs, where sig_results is a dict of cutoff:subgroup_info
+            n_tests (int): the total number of tests run
     """
     
     num_tests = 0
@@ -454,11 +471,13 @@ def policy_tree_discovery(df, running_cols, grid_dict, treat='t', alpha=0.05, bw
         covar_cols = list(df.columns)
         covar_cols.remove(treat)
         covar_cols.remove(running)
+        if 'z' in covar_cols:
+            covar_cols.remove('z')
         
-        # Step 1
+        # Step 1: identify discontinuities and subgroups
         for cutoff in cutoffs:
             cutoff_results = []
-            print(f"Testing discontinuity {running}>{cutoff} without heterogeneity...")
+            print(f"Testing discontinuity {running} with cutoff {cutoff} without heterogeneity...")
 
             if rescale:
                 run_max = max(df[running])
@@ -471,33 +490,38 @@ def policy_tree_discovery(df, running_cols, grid_dict, treat='t', alpha=0.05, bw
             
             # Steps 1a-d
             baseline_fs_results, n, cutoff_bw = test_discontinuity(df, cutoff, running,
-                                                      treat=treat, bw=bw)
+                                                      treat=treat, bw=bw, kernel=kernel)
             
-            # this is the estimated treatment uptake without considering heterogeneity
-            cost = baseline_fs_results.params['z']
-            print("number of samples: {}, cost: {}, # compliers: {}".format(n, cost, cost*n))
+            # estimated treatment uptake without considering heterogeneity
+            baseline_tau = baseline_fs_results.params['z']
+            print("Baseline\n number of samples: {}, TAU: {}, effective sample size: {}".format(n, baseline_tau, (baseline_tau**2 * n)))
             
             feat_df = create_feat_df(df, running, cutoff, cutoff_bw)
-            print("\tFitting policy tree subgroups...")
+            print("\tFitting tree subgroups...")
             
-            # Steps 1e-1g
-            node_dict = get_policy_tree_subgroups(feat_df, covar_cols, cost,
+            # Step 1e
+            node_dict = get_tree_subgroups(feat_df, covar_cols, baseline_tau,
                                                   treat=treat,
-                                                  # fixed hyperparameters for interpretable subgroups
                                                   max_depth=3,
-                                                  min_samples_leaf=100,
-                                                  random_state=random_state
+                                                  min_impurity_decrease=0.01,
+                                                  n_jobs=n_jobs,
                                                  ) 
 
             num_tests += len(node_dict)
-            print("\tTesting subgroup discontinuities...")
-            # Step 1h
+            print("\tObtain candidate subgroups...")
+            # Step 1f
             for node_id, node_info in node_dict.items():
                 
-                # precompute Step 3
+                # precompute Step 2aii
                 fs_reg_results, _, _ = test_discontinuity(feat_df[node_info['subgroup_mask']], cutoff, running,
-                                                          treat=treat, bw=cutoff_bw)
+                                                          treat=treat, bw=cutoff_bw, kernel=kernel)
                 node_info['llr_results'] = fs_reg_results
+                if fs_reg_results is not None:
+                    node_info['reg_neff_subgroup'] = fs_reg_results.params['z'] **2 * feat_df[node_info['subgroup_mask']].shape[0]
+                    node_info['neff_diff'] = node_info['reg_neff_subgroup'] - node_info['reg_neff_baseline']
+                else:
+                    node_info['reg_neff_subgroup'] = None
+
                 
                 if omit_mask:
                     node_info['subgroup_mask'] = None
@@ -510,9 +534,8 @@ def policy_tree_discovery(df, running_cols, grid_dict, treat='t', alpha=0.05, bw
                 cutoff_key = cutoff
             running_dict[np.round(cutoff_key, 2)] = cutoff_results
     
-        # Step 2
         subgroup_dict[running] = running_dict
     
     # Save subgroup_dict
-    # Steps 4-5 are computed in separate notebook scripts for checkpointing
+    # The remainder of Step 2 is computed in separate script for checkpointing
     return subgroup_dict, num_tests

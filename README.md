@@ -3,7 +3,7 @@
 This project has the following structure:
 
 ~~~~
-aaai-rdd-subgroup-discovery
+rdsgd/
 ├── data/                     # processed data files
 ├── figures/                  # figures for paper
 ├── results/                  # Notebooks that reproduce all main results and figures
@@ -17,11 +17,11 @@ Note that this project utilizes three separate version-controlled repositories, 
 
 ## Steps to reproduce figures and results in main text
 
-1. Run notebooks in `results/` in sequential order: 
-    - `01_sim_single_cov.ipynb`
-    - `02_sim_multiple_cov.ipynb`
-    - `03_medical_claims.ipynb`
-    - `04_app_tau_power.ipynb`
+1. Run notebooks in `results/`: 
+    - `01_neff_simulations.ipynb`
+    - `02_sim_single_cov.ipynb`
+    - `03_sim_multidim.ipynb`
+    - `04_medical_claims.ipynb`
 2. Results and figures will be embedded in the Jupyter notebooks, as well as written to `figures/`.
 
 ## Steps to reproduce simulated experiments
@@ -35,20 +35,20 @@ Run in sequential order:
 1. `src/rdd-discovery/experiments/baseline_experiments.sh`
 2. `src/rdd-discovery/experiments/pre_herlands_experiments.py`
 3. `src/herlands-lord3/src/herlands_sim.ipynb`
-4. `src/rdd-discovery/notebooks/aaai/01_single_sim_results.ipynb`
+4. `src/rdd-discovery/experiments/run_blend_experiments.py`
 
 ### Heterogeneity in multiple covariates
 
-Run `src/rdd-notebooks/aaai/02_multi_sim_results.ipynb`
+Run `src/rdd-discovery/run_multidim_experiments.py`
 
 ## Medical claims case study
 
 Since the claims dataset is private, we cannot provide the source data to replicate the RDSGD search. However notebooks that execute the experiments for the three case studies can be found in:
 
-- `src/rdd-discovery/notebooks/aaai/03_breast_cancer_discovery.ipynb`
-- `src/rdd-discovery/notebooks/aaai/04_colon_cancer_discovery.ipynb`
-- `src/rdd-discovery/notebooks/aaai/05_diabetes_discovery.ipynb`
+- `src/rdd-discovery/notebooks/kdd/03_breast_cancer_discovery.ipynb`
+- `src/rdd-discovery/notebooks/kdd/04_colon_cancer_discovery.ipynb`
+- `src/rdd-discovery/notebooks/kdd/05_diabetes_discovery.ipynb`
 
 ## Hyperparameters
 
-Hyperparameter values as specified in the Technical Appendix for all simulated data and model training can be found in the accompanying source code. In particular, see `src/rdd-discovery/utils/rddd.py` for algorithm details and `src/rdd-discovery/utils/sim.py` for simulation details.
+Hyperparameter values as specified in the Supplementary Material for all simulated data and model training can be found in the accompanying source code. In particular, see `src/rdd-discovery/utils/rddd.py` for algorithm details and `src/rdd-discovery/utils/sim.py` for simulation details.
