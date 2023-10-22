@@ -1,6 +1,8 @@
 # Automated Detection of Causal Inference Opportunities: Regression Discontinuity Subgroup Discovery
 
-Code repository for results accompanying the paper, accepted to TMLR 2023: [https://openreview.net/forum?id=cdRYoTyHZh](https://openreview.net/forum?id=cdRYoTyHZh)
+Code repository for results accompanying the paper, accepted to TMLR 2023.
+
+Openreview: [https://openreview.net/forum?id=cdRYoTyHZh](https://openreview.net/forum?id=cdRYoTyHZh)
 
 This project has the following structure:
 
