@@ -13,15 +13,18 @@ rdsgd/
 |    └── rdd-discovery/       # repository for implementing RDSGD and experiments
 ~~~~
 
-Note that this project utilizes three separate version-controlled repositories, which we provide anonymized versions of under `src/`. We also provide a streamlined set of notebooks in `results/` to easily reproduce the figures and results presented in the paper. Python version >=3.8 and package versions specified in `src/rdd-discovery/requirements.txt` needed to ensure pickle compatability.
+Note that this project utilizes three separate version-controlled repositories, which we provide copies of under `src/`. We also provide a streamlined set of notebooks in `results/` to easily reproduce the figures and results presented in the paper. Python version >=3.8 and package versions specified in `src/rdd-discovery/requirements.txt` needed to ensure pickle compatability.
+
+**TODO**: Package up `src/rdd-discovery/` as a standalone Python package.
 
 ## Steps to reproduce figures and results in main text
 
 1. Run notebooks in `results/`: 
     - `01_neff_simulations.ipynb`
-    - `02_sim_single_cov.ipynb`
-    - `03_sim_multidim.ipynb`
-    - `04_medical_claims.ipynb`
+    - `02_load_neff_sim.ipynb`
+    - `03_sim_single_cov.ipynb`
+    - `04_sim_multidim.ipynb`
+    - `05_medical_claims.ipynb`
 2. Results and figures will be embedded in the Jupyter notebooks, as well as written to `figures/`.
 
 ## Steps to reproduce simulated experiments
@@ -45,9 +48,9 @@ Run `src/rdd-discovery/run_multidim_experiments.py`
 
 Since the claims dataset is private, we cannot provide the source data to replicate the RDSGD search. However notebooks that execute the experiments for the three case studies can be found in:
 
-- `src/rdd-discovery/notebooks/kdd/03_breast_cancer_discovery.ipynb`
-- `src/rdd-discovery/notebooks/kdd/04_colon_cancer_discovery.ipynb`
-- `src/rdd-discovery/notebooks/kdd/05_diabetes_discovery.ipynb`
+- `src/rdd-discovery/notebooks/tmlr/03_breast_cancer_discovery.ipynb`
+- `src/rdd-discovery/notebooks/tmlr/04_colon_cancer_discovery.ipynb`
+- `src/rdd-discovery/notebooks/tmlr/05_diabetes_discovery.ipynb`
 
 ## Hyperparameters
 
