@@ -1,5 +1,7 @@
 # Automated Detection of Causal Inference Opportunities: Regression Discontinuity Subgroup Discovery
 
+Code repository for results accompanying the paper, accepted to TMLR 2023: [https://openreview.net/forum?id=cdRYoTyHZh](https://openreview.net/forum?id=cdRYoTyHZh)
+
 This project has the following structure:
 
 ~~~~
@@ -21,10 +23,9 @@ Note that this project utilizes three separate version-controlled repositories, 
 
 1. Run notebooks in `results/`: 
     - `01_neff_simulations.ipynb`
-    - `02_load_neff_sim.ipynb`
-    - `03_sim_single_cov.ipynb`
-    - `04_sim_multidim.ipynb`
-    - `05_medical_claims.ipynb`
+    - `02_sim_single_cov.ipynb`
+    - `03_sim_multidim.ipynb`
+    - `04_medical_claims.ipynb`
 2. Results and figures will be embedded in the Jupyter notebooks, as well as written to `figures/`.
 
 ## Steps to reproduce simulated experiments
@@ -48,9 +49,9 @@ Run `src/rdd-discovery/run_multidim_experiments.py`
 
 Since the claims dataset is private, we cannot provide the source data to replicate the RDSGD search. However notebooks that execute the experiments for the three case studies can be found in:
 
-- `src/rdd-discovery/notebooks/tmlr/03_breast_cancer_discovery.ipynb`
-- `src/rdd-discovery/notebooks/tmlr/04_colon_cancer_discovery.ipynb`
-- `src/rdd-discovery/notebooks/tmlr/05_diabetes_discovery.ipynb`
+- `src/rdd-discovery/notebooks/tmlr/05_breast_cancer_discovery.ipynb`
+- `src/rdd-discovery/notebooks/tmlr/06_colon_cancer_discovery.ipynb`
+- `src/rdd-discovery/notebooks/tmlr/07_diabetes_discovery.ipynb`
 
 ## Hyperparameters
 
